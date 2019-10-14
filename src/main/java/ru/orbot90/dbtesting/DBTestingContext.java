@@ -1,11 +1,14 @@
 package ru.orbot90.dbtesting;
 
+import ru.orbot90.dbtesting.data.DatabaseMediator;
+import ru.orbot90.dbtesting.data.SqlPreparer;
 import ru.orbot90.dbtesting.data.TestData;
 import ru.orbot90.dbtesting.data.TestDataInitializer;
 import ru.orbot90.dbtesting.validation.ValidationResult;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The main context class of the DBTesting framework.
@@ -17,14 +20,15 @@ public class DBTestingContext {
 
     private TestData initTestData;
     private TestData validationTestData;
-    private final DataSource dataSource;
+    private final DatabaseMediator databaseMediator;
+    private final SqlPreparer sqlPreparer = new SqlPreparer();
 
     DBTestingContext(DataFilesType dataFilesType,
                      Collection<String> initFilesLocations,
                      Collection<String> validationFilesLocations,
                      DataSource dataSource, TestDataFilesLocationType locationType) {
         this.initializeTestData(initFilesLocations, validationFilesLocations, dataFilesType, locationType);
-        this.dataSource = dataSource;
+        this.databaseMediator = new DatabaseMediator(dataSource);
     }
 
     public static DBTestingContextBuilder builder() {
@@ -35,7 +39,8 @@ public class DBTestingContext {
      * Uploads initial data from the init files to the database.
      */
     public void uploadInitData() {
-        // TODO: implement
+        List<String> insertQueries = this.sqlPreparer.prepareInsertQueries(this.initTestData);
+        databaseMediator.insertData(insertQueries);
     }
 
     /**
