@@ -1,7 +1,9 @@
 package ru.orbot90.dbtesting.data;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test data abstraction, containing the data loaded from the test files.
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public class TestData {
 
-    private List<TestDataUnit> testDataUnits = new LinkedList<>();
+    private Map<String, List<TestDataUnit>> testDataUnits = new HashMap<>();
 
     /**
      * Add test data record.
@@ -20,14 +22,15 @@ public class TestData {
      * @param values - list of values with the same order as column names
      */
     public void addRecord(String tableName, List<String> columnNames, List<String> values) {
-        TestDataUnit unit = new TestDataUnit(tableName, columnNames, values);
-        this.testDataUnits.add(unit);
+        TestDataUnit unit = new TestDataUnit(columnNames, values);
+        List<TestDataUnit> records = this.testDataUnits.computeIfAbsent(tableName, key -> new LinkedList<>());
+        records.add(unit);
     }
 
     /**
-     * Get list of test data units
+     * Get test data units
      */
-    public List<TestDataUnit> getTestDataUnits() {
+    public Map<String, List<TestDataUnit>> getTestDataUnits() {
         return testDataUnits;
     }
 }

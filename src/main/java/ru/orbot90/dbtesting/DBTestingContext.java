@@ -1,14 +1,12 @@
 package ru.orbot90.dbtesting;
 
-import ru.orbot90.dbtesting.data.DatabaseMediator;
-import ru.orbot90.dbtesting.data.SqlPreparer;
-import ru.orbot90.dbtesting.data.TestData;
-import ru.orbot90.dbtesting.data.TestDataInitializer;
+import ru.orbot90.dbtesting.data.*;
 import ru.orbot90.dbtesting.validation.ValidationResult;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The main context class of the DBTesting framework.
@@ -52,8 +50,30 @@ public class DBTestingContext {
      * This method is never expected to return null or throw any exceptions
      */
     public ValidationResult validateData() {
-        // TODO: implement
-        return null;
+        ValidationResult validationResult = new ValidationResult();
+        Map<String, List<TestDataUnit>> testDataUnits = this.validationTestData.getTestDataUnits();
+        for (Map.Entry<String, List<TestDataUnit>> entry : testDataUnits.entrySet()) {
+            String tableName = entry.getKey();
+            List<TestDataUnit> testDataUnitList = entry.getValue();
+
+            String countSql = this.sqlPreparer.prepareCountQuery(tableName);
+            int count = databaseMediator.performCountQuery(countSql);
+            int expectedCount = testDataUnitList.size();
+            if (count != expectedCount) {
+                validationResult.addCountError(tableName, expectedCount, count);
+            }
+
+            List<String> selectQueries = this.sqlPreparer.prepareSelectQueries(tableName, testDataUnitList);
+
+            Map<String, Boolean> existsMap = this.databaseMediator.runSelectQueriesAndCheckExistence(selectQueries);
+
+            for (Map.Entry<String, Boolean> existsEntry : existsMap.entrySet()) {
+                if (!existsEntry.getValue()) {
+                    validationResult.addExistsError(tableName, existsEntry.getKey());
+                }
+            }
+        }
+        return validationResult;
     }
 
     private void initializeTestData(Collection<String> initFilesLocations,

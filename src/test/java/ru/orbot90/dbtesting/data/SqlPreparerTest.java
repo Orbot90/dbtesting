@@ -23,4 +23,10 @@ public class SqlPreparerTest {
                 "(columnone,columntwo) VALUES ('1','2')", insertSqls.get(0));
     }
 
+    @Test
+    public void shouldPrepareCountQuery() {
+        String countQuery = sqlPreparer.prepareCountQuery("TableName");
+        Assert.assertEquals("Wrong query was generated", "SELECT COUNT(*) FROM TableName", countQuery);
+    }
+
 }

@@ -30,8 +30,8 @@ public class DBTestingContextBuilderTest {
     public void shouldSuccessfullyInitContext() {
         DBTestingContext context = DBTestingContext.builder()
                 .setDataSource(Mockito.mock(DataSource.class))
-                .setInitFilesLocations("testfiles/file1.jsn")
-                .setValidationFilesLocations("testfiles/file2.jsn")
+                .setInitFilesLocations("testdata/initializer/initfile.jsn")
+                .setValidationFilesLocations("testdata/initializer/initfile.jsn")
                 .build();
 
         Assert.assertNotNull("Returned context is null", context);

@@ -19,6 +19,6 @@ public class TestDataInitializerTest {
     public void shoudInitializeTestData() {
         TestData testData = testDataInitializer.initTestData(Arrays.asList("testdata/initializer/initfile.jsn"));
         Assert.assertNotNull("Test data is null", testData);
-        Assert.assertEquals("Wrong number of data units", 3, testData.getTestDataUnits().size());
+        Assert.assertEquals("Wrong number of data units entries", 2, testData.getTestDataUnits().size());
     }
 }

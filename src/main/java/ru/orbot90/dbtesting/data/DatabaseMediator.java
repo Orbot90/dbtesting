@@ -1,9 +1,14 @@
 package ru.orbot90.dbtesting.data;
 
+import ru.orbot90.dbtesting.error.DatabaseError;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service for working with the database.
@@ -36,9 +41,41 @@ public class DatabaseMediator {
                 connection.rollback();
             }
         } catch (SQLException e) {
-            // TODO: Change to logging and wrapping
+            // TODO: Change to logging
             e.printStackTrace();
+            throw new DatabaseError(e);
         }
 
+    }
+
+    public int performCountQuery(String countSql) {
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery(countSql);
+            resultSet.next();
+            return resultSet.getInt(0);
+        } catch (SQLException e) {
+            // TODO: Change to logging
+            e.printStackTrace();
+            throw new DatabaseError(e);
+        }
+    }
+
+    public Map<String, Boolean> runSelectQueriesAndCheckExistence(List<String> selectQueries) {
+        Map<String, Boolean> result = new HashMap<>();
+        for (String selectQuery : selectQueries) {
+            try (Connection connection = dataSource.getConnection()) {
+                ResultSet resultSet = connection.createStatement().executeQuery(selectQuery);
+                if (resultSet.next()) {
+                    result.put(selectQuery, true);
+                } else {
+                    result.put(selectQuery, false);
+                }
+            } catch (SQLException e) {
+                // TODO: Change to logging
+                e.printStackTrace();
+                throw new DatabaseError(e);
+            }
+        }
+        return result;
     }
 }
