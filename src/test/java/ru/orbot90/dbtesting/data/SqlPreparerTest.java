@@ -24,6 +24,22 @@ public class SqlPreparerTest {
     }
 
     @Test
+    public void shouldPrepareSqlForInsertWithDifferentTypes() {
+        TestData testData = new TestData();
+        testData.addRecord("TableOne", Arrays.asList("columnone", "columntwo"), Arrays.asList("abc", "2"));
+        testData.addRecord("TableOne", Arrays.asList("columnone", "columntwo"), Arrays.asList(null, "1"));
+        List<String> insertSqls = sqlPreparer.prepareInsertQueries(testData);
+
+        Assert.assertEquals("Wrong sql", "INSERT INTO TableOne (columnone,columntwo) VALUES ('abc','2')",
+                insertSqls.get(0));
+        Assert.assertEquals("Wrong sql", "INSERT INTO TableOne (columntwo) VALUES ('1')",
+                insertSqls.get(1));
+        for (String sql : insertSqls) {
+            System.out.println(sql);
+        }
+    }
+
+    @Test
     public void shouldPrepareCountQuery() {
         String countQuery = sqlPreparer.prepareCountQuery("TableName");
         Assert.assertEquals("Wrong query was generated", "SELECT COUNT(*) FROM TableName", countQuery);

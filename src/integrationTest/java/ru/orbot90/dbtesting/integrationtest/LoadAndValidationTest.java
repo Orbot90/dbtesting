@@ -25,7 +25,7 @@ public class LoadAndValidationTest {
 
         dataSource.getConnection().createStatement().executeUpdate("DROP TABLE IF EXISTS tableone; DROP TABLE IF EXISTS tabletwo;");
         dataSource.getConnection().createStatement().executeUpdate("CREATE TABLE tableone (columnone varchar(100), columntwo varchar(100))");
-        dataSource.getConnection().createStatement().executeUpdate("CREATE TABLE tabletwo (columnthree varchar(100))");
+        dataSource.getConnection().createStatement().executeUpdate("CREATE TABLE tabletwo (columnthree int)");
     }
 
     @Test
@@ -59,8 +59,5 @@ public class LoadAndValidationTest {
                 "In the table \"TableOne\" was not found a record with query: SELECT * " +
                         "FROM TableOne WHERE columnone = 666 AND columntwo = 10",
                 validationResult.getValidationErrors().get(1));
-        for (String error : validationResult.getValidationErrors()) {
-            System.out.println(error);
-        }
     }
 }

@@ -28,24 +28,31 @@ public class SqlPreparer {
             for (TestDataUnit unit : unitsList) {
                 StringBuilder queryBuilder = new StringBuilder("INSERT INTO ")
                         .append(tableName)
-                        .append(" (");
+                        .append(" ");
 
-                for (String column : unit.getHeaders()) {
-                    queryBuilder.append(column)
-                            .append(",");
-                }
-                queryBuilder = new StringBuilder(queryBuilder.subSequence(0, queryBuilder.length() - 1));
-                queryBuilder.append(")")
-                        .append(" VALUES (");
+                Iterator<String> headersIterator = unit.getHeaders().iterator();
+                Iterator<String> valuesIterator = unit.getValues().iterator();
 
-                for (String value : unit.getValues()) {
-                    queryBuilder.append("'")
-                            .append(value)
-                            .append("'")
-                            .append(",");
+                StringBuilder columnNamesClause = new StringBuilder("(");
+                StringBuilder valuesClause = new StringBuilder("(");
+                while (headersIterator.hasNext()) {
+                    String columnName = headersIterator.next();
+                    String value = valuesIterator.next();
+
+                    if (value != null) {
+                        columnNamesClause.append(columnName)
+                                .append(",");
+                        valuesClause.append("'")
+                                .append(value)
+                                .append("'")
+                                .append(",");
+                    }
                 }
-                queryBuilder = new StringBuilder(queryBuilder.subSequence(0, queryBuilder.length() - 1));
-                queryBuilder.append(")");
+
+                queryBuilder.append(columnNamesClause.subSequence(0, columnNamesClause.lastIndexOf(",")))
+                        .append(") VALUES ")
+                        .append(valuesClause.subSequence(0, valuesClause.lastIndexOf(",")))
+                        .append(")");
 
                 inserts.add(queryBuilder.toString());
             }

@@ -1,6 +1,6 @@
 {
   "TableOne" : [
-    {"columnone" :  "1", "columntwo" :  "2"},
+    {"columnone" :  null, "columntwo" :  "2"},
     {"columnone" :  "3", "columntwo" :  "4"},
     {"columnone" :  "666", "columntwo" :  "10"}
   ],
