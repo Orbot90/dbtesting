@@ -52,7 +52,7 @@ public class DatabaseMediator {
         try (Connection connection = dataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(countSql);
             resultSet.next();
-            return resultSet.getInt(0);
+            return resultSet.getInt(1);
         } catch (SQLException e) {
             // TODO: Change to logging
             e.printStackTrace();

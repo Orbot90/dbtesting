@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.orbot90.dbtesting.TestDataFilesLocationType;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static ru.orbot90.dbtesting.DataFilesType.JSON;
 
@@ -18,6 +19,11 @@ public class TestDataInitializerTest {
     @Test
     public void shoudInitializeTestData() {
         TestData testData = testDataInitializer.initTestData(Arrays.asList("testdata/initializer/initfile.jsn"));
+        List<TestDataUnit> tableOneData = testData.getTestDataUnits().get("TableOne");
+        Assert.assertEquals("TableOne data units count is wrong", 2, tableOneData.size());
+        TestDataUnit tableOneFirstUnit = tableOneData.get(0);
+        Assert.assertEquals("Wrong headers list", Arrays.asList("columnone", "columntwo"),tableOneFirstUnit.getHeaders());
+        Assert.assertEquals("Wrong values list", Arrays.asList("1", "2"),tableOneFirstUnit.getValues());
         Assert.assertNotNull("Test data is null", testData);
         Assert.assertEquals("Wrong number of data units entries", 2, testData.getTestDataUnits().size());
     }

@@ -49,9 +49,9 @@ public class TestDataInitializer {
                 String tableName = testDataEntry.getKey();
 
                 List<Map<String, String>> testDataRecords = testDataEntry.getValue();
-                List<String> columnNames = new LinkedList<>();
-                List<String> values = new LinkedList<>();
                 for (Map<String, String> record : testDataRecords) {
+                    List<String> columnNames = new LinkedList<>();
+                    List<String> values = new LinkedList<>();
                     for (Map.Entry<String, String> columnValuePair : record.entrySet()) {
                         columnNames.add(columnValuePair.getKey());
                         values.add(columnValuePair.getValue());
