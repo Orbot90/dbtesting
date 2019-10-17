@@ -78,4 +78,16 @@ public class DatabaseMediator {
         }
         return result;
     }
+
+    public void performDeleteQueries(List<String> deleteQueries) {
+        for (String deleteQuery : deleteQueries) {
+            try (Connection connection = dataSource.getConnection()) {
+                connection.createStatement().executeUpdate(deleteQuery);
+            } catch (SQLException e) {
+                // TODO: Change to logging
+                e.printStackTrace();
+                throw new DatabaseError(e);
+            }
+        }
+    }
 }

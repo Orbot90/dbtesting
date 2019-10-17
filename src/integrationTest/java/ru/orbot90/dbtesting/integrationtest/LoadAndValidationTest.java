@@ -8,7 +8,9 @@ import ru.orbot90.dbtesting.DBTestingContext;
 import ru.orbot90.dbtesting.validation.ValidationResult;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author Iurii Plevako orbot90@gmail.com
@@ -59,5 +61,21 @@ public class LoadAndValidationTest {
                 "In the table \"TableOne\" was not found a record with query: SELECT * " +
                         "FROM TableOne WHERE columnone = 666 AND columntwo = 10",
                 validationResult.getValidationErrors().get(1));
+    }
+
+    @Test
+    public void shouldDeleteData() throws SQLException {
+        DBTestingContext context = DBTestingContext.builder()
+                .setDataSource(dataSource)
+                .setInitFilesLocations("/testdata/initdata.jsn")
+                .setDataRemoveFilesLocations("/testdata/initdata.jsn")
+                .build();
+
+        context.uploadInitData();
+        context.removeData();
+
+        Statement statement = this.dataSource.getConnection().createStatement();
+        ResultSet result = statement.executeQuery("SELECT * FROM TableOne");
+        Assert.assertFalse("Table is not empty", result.next());
     }
 }

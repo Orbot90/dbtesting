@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The main context class of the DBTesting framework.
@@ -20,12 +21,15 @@ public class DBTestingContext {
     private TestData validationTestData;
     private final DatabaseMediator databaseMediator;
     private final SqlPreparer sqlPreparer = new SqlPreparer();
+    private TestData removeTestData;
 
     DBTestingContext(DataFilesType dataFilesType,
                      Collection<String> initFilesLocations,
                      Collection<String> validationFilesLocations,
+                     Collection<String> dataRemoveFilesLocations,
                      DataSource dataSource, TestDataFilesLocationType locationType) {
-        this.initializeTestData(initFilesLocations, validationFilesLocations, dataFilesType, locationType);
+        this.initializeTestData(initFilesLocations, validationFilesLocations,
+                dataRemoveFilesLocations, dataFilesType, locationType);
         this.databaseMediator = new DatabaseMediator(dataSource);
     }
 
@@ -76,12 +80,25 @@ public class DBTestingContext {
         return validationResult;
     }
 
+    public void removeData() {
+        List<String> deleteQueries = this.sqlPreparer.prepareDeleteQueries(this.removeTestData);
+        this.databaseMediator.performDeleteQueries(deleteQueries);
+    }
+
     private void initializeTestData(Collection<String> initFilesLocations,
-                                    Collection<String> validationFilesLocations, DataFilesType dataFilesType,
+                                    Collection<String> validationFilesLocations,
+                                    Collection<String> dataRemoveFilesLocations, DataFilesType dataFilesType,
                                     TestDataFilesLocationType locationType) {
         TestDataInitializer testDataInitializer = new TestDataInitializer(dataFilesType, locationType);
-        this.initTestData = testDataInitializer.initTestData(initFilesLocations);
-        this.validationTestData = testDataInitializer.initTestData(validationFilesLocations);
+        this.initTestData = Optional.ofNullable(initFilesLocations)
+                .map(testDataInitializer::initTestData)
+                .orElse(null);
+        this.validationTestData = Optional.ofNullable(validationFilesLocations)
+                .map(testDataInitializer::initTestData)
+                .orElse(null);
+        this.removeTestData = Optional.ofNullable(dataRemoveFilesLocations)
+                .map(testDataInitializer::initTestData)
+                .orElse(null);
     }
 
 }

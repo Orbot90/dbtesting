@@ -19,19 +19,20 @@ public class DBTestingContextBuilder {
     private TestDataFilesLocationType locationType = TestDataFilesLocationType.CLASSPATH;
     private Collection<String> initFilesLocations;
     private Collection<String> validationFilesLocations;
+    private Collection<String> dataRemoveFilesLocations;
     private DataSource dataSource;
 
     public DBTestingContext build() {
         if (dataSource == null) {
             throw new ContextInitializationException("DataSource must not be null");
         }
-        if (this.isEmptyOrNull(initFilesLocations) || this.isEmptyOrNull(validationFilesLocations)) {
+        if (this.isEmptyOrNull(initFilesLocations) && this.isEmptyOrNull(validationFilesLocations)) {
             throw new ContextInitializationException("Either init files or validation files must be set");
         }
 
         try {
             return new DBTestingContext(this.dataFilesType, this.initFilesLocations,
-                    this.validationFilesLocations, this.dataSource, this.locationType);
+                    this.validationFilesLocations, this.dataRemoveFilesLocations, this.dataSource, this.locationType);
         } catch (Exception e) {
             throw new ContextInitializationException("Error while initializing testing context", e);
         }
@@ -51,6 +52,12 @@ public class DBTestingContextBuilder {
     public DBTestingContextBuilder setValidationFilesLocations(String...validationFilesLocations) {
         this.validationFilesLocations = new LinkedList<>();
         this.validationFilesLocations.addAll(Arrays.asList(validationFilesLocations));
+        return this;
+    }
+
+    public DBTestingContextBuilder setDataRemoveFilesLocations(String...dataRemoveFilesLocations) {
+        this.dataRemoveFilesLocations = new LinkedList<>();
+        this.dataRemoveFilesLocations.addAll(Arrays.asList(dataRemoveFilesLocations));
         return this;
     }
 

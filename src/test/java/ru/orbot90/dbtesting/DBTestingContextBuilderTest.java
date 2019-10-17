@@ -37,4 +37,24 @@ public class DBTestingContextBuilderTest {
         Assert.assertNotNull("Returned context is null", context);
     }
 
+    @Test
+    public void shouldSuccessfullyInitContextWithOnlyInitData() {
+        DBTestingContext context = DBTestingContext.builder()
+                .setDataSource(Mockito.mock(DataSource.class))
+                .setInitFilesLocations("testdata/initializer/initfile.jsn")
+                .build();
+
+        Assert.assertNotNull("Returned context is null", context);
+    }
+
+    @Test
+    public void shouldSuccessfullyInitContextWithOnlyValidationData() {
+        DBTestingContext context = DBTestingContext.builder()
+                .setDataSource(Mockito.mock(DataSource.class))
+                .setValidationFilesLocations("testdata/initializer/initfile.jsn")
+                .build();
+
+        Assert.assertNotNull("Returned context is null", context);
+    }
+
 }
